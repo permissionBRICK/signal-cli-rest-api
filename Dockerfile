@@ -136,12 +136,12 @@ ENV SIGNAL_CLI_REST_API_PLUGIN_SHARED_OBJ_DIR=/usr/bin/
 
 RUN dpkg-reconfigure debconf --frontend=noninteractive \
 	&& apt-get update \
-	&& apt-get install -y --no-install-recommends util-linux supervisor openjdk-25-jre curl locales \
+	&& apt-get install -y --no-install-recommends util-linux supervisor openjdk-25-jre curl locales socat \
 	&& rm -rf /var/lib/apt/lists/* 
 
 COPY --from=buildcontainer /tmp/signal-cli-rest-api-src/signal-cli-rest-api /usr/bin/signal-cli-rest-api
 COPY --from=buildcontainer /opt/signal-cli-${SIGNAL_CLI_VERSION} /opt/signal-cli-${SIGNAL_CLI_VERSION}
-COPY --from=buildcontainer /tmp/signal-cli-native /opt/signal-cli-${SIGNAL_CLI_VERSION}/bin/signal-cli-native
+COPY --from=buildcontainer --chmod=0755 /tmp/signal-cli-native /opt/signal-cli-${SIGNAL_CLI_VERSION}/bin/signal-cli-native
 COPY --from=buildcontainer /tmp/signal-cli-rest-api-src/scripts/jsonrpc2-helper /usr/bin/jsonrpc2-helper
 COPY --from=buildcontainer /tmp/signal-cli-rest-api-src/signal-cli-rest-api_plugin_loader.so /usr/bin/signal-cli-rest-api_plugin_loader.so
 COPY entrypoint.sh /entrypoint.sh
@@ -168,6 +168,11 @@ RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
 ENV LANG en_US.UTF-8
 
 EXPOSE ${PORT}
+
+# Optional second port for direct external access to the signal-cli JSON-RPC
+# socket. Only opened when MODE=json-rpc(-native) and JSON_RPC_TCP_PORT is set.
+# Declared here so it shows up in image metadata; the host still has to map it.
+EXPOSE 7583
 
 ENV SIGNAL_CLI_CONFIG_DIR=/home/.local/share/signal-cli
 ENV SIGNAL_CLI_UID=1000

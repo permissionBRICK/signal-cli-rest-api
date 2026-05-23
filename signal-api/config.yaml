@@ -1,0 +1,41 @@
+name: Signal CLI REST API
+version: "0.1.0"
+slug: signal_cli_rest_api
+description: >-
+  Signal Messenger REST API wrapper around signal-cli, with an optional
+  second port that exposes the signal-cli JSON-RPC socket directly so other
+  apps (e.g. on the Home Assistant host network) can talk JSON-RPC to it.
+url: https://github.com/permissionBRICK/signal-cli-rest-api
+arch:
+  - amd64
+  - aarch64
+  - armv7
+init: false
+boot: auto
+startup: services
+hassio_role: default
+host_network: false
+image: ghcr.io/permissionbrick/signal-cli-rest-api-addon-{arch}
+ports:
+  "8080/tcp": 8080
+  "7583/tcp": 7583
+ports_description:
+  "8080/tcp": REST API
+  "7583/tcp": signal-cli JSON-RPC (only listens when expose_jsonrpc is on AND mode is json-rpc / json-rpc-native; change the host port here if 7583 conflicts on the host)
+map:
+  - addon_config:rw
+options:
+  mode: normal
+  log_level: info
+  expose_jsonrpc: false
+schema:
+  mode: list(normal|native|json-rpc|json-rpc-native)
+  log_level: list(debug|info|warn|error)
+  expose_jsonrpc: bool
+  auto_receive_schedule: str?
+  json_rpc_ignore_attachments: bool?
+  json_rpc_ignore_stories: bool?
+  json_rpc_ignore_avatars: bool?
+  json_rpc_ignore_stickers: bool?
+  json_rpc_trust_new_identities: list(on-first-use|always|never)?
+  default_signal_text_mode: list(normal|styled)?

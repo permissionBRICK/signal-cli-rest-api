@@ -2,10 +2,12 @@ services:
   signal-cli-rest-api:
     image: bbernhard/signal-cli-rest-api:latest
     environment:
-      - MODE=normal #supported modes: json-rpc, native, normal
+      - MODE=normal #supported modes: json-rpc, json-rpc-native, native, normal
       #- AUTO_RECEIVE_SCHEDULE=0 22 * * * #enable this parameter on demand (see description below)
+      #- JSON_RPC_TCP_PORT=7583 #only effective in json-rpc / json-rpc-native: expose the signal-cli daemon socket on this port
     ports:
       - "8080:8080" #map docker port 8080 to host port 8080.
+      #- "7583:7583" #uncomment together with JSON_RPC_TCP_PORT to access signal-cli JSON-RPC directly
     volumes:
       - "./signal-cli-config:/home/.local/share/signal-cli" #map "signal-cli-config" folder on host system into docker container. the folder contains the password and cryptographic keys when a new number is registered
 

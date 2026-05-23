@@ -35,6 +35,31 @@ if [ -n "$JAVA_OPTS" ] ; then
 fi
 service supervisor start
 supervisorctl start all
+
+# Optional: expose the signal-cli JSON-RPC TCP socket directly to the outside.
+# When JSON_RPC_TCP_PORT is set, socat listens on 0.0.0.0:$JSON_RPC_TCP_PORT
+# and forwards each accepted connection to the local signal-cli daemon on
+# 127.0.0.1:6001. signal-cli daemon accepts multiple concurrent TCP clients,
+# so the REST API on 127.0.0.1:6001 keeps working in parallel.
+if [ -n "$JSON_RPC_TCP_PORT" ]; then
+    case "$JSON_RPC_TCP_PORT" in
+        ''|*[!0-9]*)
+            echo "JSON_RPC_TCP_PORT must be a number, got '$JSON_RPC_TCP_PORT'" >&2
+            exit 1
+            ;;
+    esac
+    JSON_RPC_TCP_BIND="${JSON_RPC_TCP_BIND:-0.0.0.0}"
+    echo "Exposing signal-cli JSON-RPC on ${JSON_RPC_TCP_BIND}:${JSON_RPC_TCP_PORT} -> 127.0.0.1:6001"
+    socat -d -lf /var/log/signal-cli-jsonrpc-forwarder.log \
+        TCP-LISTEN:${JSON_RPC_TCP_PORT},bind=${JSON_RPC_TCP_BIND},fork,reuseaddr \
+        TCP:127.0.0.1:6001 &
+fi
+fi
+
+if [ -z "$MODE" ] || [ "$MODE" = "normal" ] || [ "$MODE" = "native" ]; then
+    if [ -n "$JSON_RPC_TCP_PORT" ]; then
+        echo "JSON_RPC_TCP_PORT is only valid in MODE=json-rpc or json-rpc-native (MODE='${MODE:-normal}'). Ignoring." >&2
+    fi
 fi
 
 export HOST_IP=$(hostname -I | awk '{print $1}')

@@ -1,0 +1,7 @@
+build_from:
+  amd64: ghcr.io/permissionbrick/signal-cli-rest-api:latest
+  aarch64: ghcr.io/permissionbrick/signal-cli-rest-api:latest
+  armv7: ghcr.io/permissionbrick/signal-cli-rest-api:latest
+labels:
+  org.opencontainers.image.title: "Signal CLI REST API (Home Assistant addon)"
+  org.opencontainers.image.source: "https://github.com/permissionBRICK/signal-cli-rest-api"
