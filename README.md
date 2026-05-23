@@ -155,9 +155,16 @@ There are a bunch of environmental variables that can be set inside the docker c
 
 * `LOG_LEVEL`: Allows to set the log level. Supported values: `debug`, `info`, `warn`, `error`. If nothing is specified, it defaults to `info`.
 
-* `JSON_RPC_TCP_PORT`: Only honored when `MODE=json-rpc` or `MODE=json-rpc-native`. When set, the embedded `signal-cli` daemon's JSON-RPC TCP socket is forwarded from `0.0.0.0:$JSON_RPC_TCP_PORT` inside the container (via `socat`), so external clients (e.g. Home Assistant on the host) can speak the [`signal-cli` JSON-RPC protocol](https://github.com/AsamK/signal-cli/blob/master/man/signal-cli-jsonrpc.5.adoc) directly. The REST API on `$PORT` keeps working in parallel because `signal-cli daemon` accepts multiple concurrent TCP clients. Don't forget to publish the port in your `docker run` / compose file.
+* `JSON_RPC_HTTP_PORT`: Only honored when `MODE=json-rpc` or `MODE=json-rpc-native`. When set, the embedded `signal-cli` daemon listens on `$JSON_RPC_HTTP_BIND:$JSON_RPC_HTTP_PORT` (defaults `0.0.0.0:<this port>`) with the [`signal-cli` HTTP JSON-RPC](https://github.com/AsamK/signal-cli/blob/master/man/signal-cli-jsonrpc.5.adoc) transport in addition to the loopback `--tcp` socket the REST API uses. External clients (e.g. [Hermes](https://github.com/permissionBRICK/hermes)) `POST` JSON-RPC bodies to `http://<host>:<port>/api/v1/rpc`. Don't forget to publish the port in your `docker run` / compose file. The listener has no authentication, so only expose it on a trusted network.
 
-* `JSON_RPC_TCP_BIND`: Only relevant together with `JSON_RPC_TCP_PORT`. Bind address for the forwarder inside the container (defaults to `0.0.0.0`).
+  Quick check:
+  ```
+  curl -sS -X POST -H 'Content-Type: application/json' \
+       -d '{"jsonrpc":"2.0","method":"version","id":1}' \
+       http://<host>:<port>/api/v1/rpc
+  ```
+
+* `JSON_RPC_HTTP_BIND`: Only relevant together with `JSON_RPC_HTTP_PORT`. Bind address for the HTTP listener inside the container (defaults to `0.0.0.0`).
 
 * `JSON_RPC_IGNORE_ATTACHMENTS`: When set to `true`, attachments are not automatically downloaded in json-rpc mode (default: `false`)
 * `JSON_RPC_IGNORE_STORIES`: When set to `true`, stories are not automatically downloaded in json-rpc mode (default: `false`)

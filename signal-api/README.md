@@ -9,7 +9,7 @@ an optional direct JSON-RPC TCP socket exposed on a second port.
 | --- | --- | --- |
 | `mode` | `normal` | `normal`, `native`, `json-rpc`, or `json-rpc-native`. See the [upstream README](https://github.com/permissionBRICK/signal-cli-rest-api#execution-modes). |
 | `log_level` | `info` | `debug`, `info`, `warn`, `error`. |
-| `expose_jsonrpc` | `false` | Only meaningful in `json-rpc` / `json-rpc-native` modes. When `true`, the signal-cli daemon's JSON-RPC TCP socket is published on the addon's second port (container port `7583`). The host-side port can be changed in the addon's **Network** tab. |
+| `expose_jsonrpc` | `false` | Only meaningful in `json-rpc` / `json-rpc-native` modes. When `true`, the signal-cli daemon's HTTP JSON-RPC transport is published on the addon's second port (container port `7583`, endpoint `POST /api/v1/rpc`). The host-side port can be changed in the addon's **Network** tab. The listener has no authentication; only expose it on a trusted network. |
 | `auto_receive_schedule` | — | Cron expression for periodic `receive` (only in `normal`/`native` mode). |
 | `json_rpc_ignore_attachments` | — | Skip attachment download (json-rpc only). |
 | `json_rpc_ignore_stories` | — | Skip story download (json-rpc only). |
@@ -23,7 +23,7 @@ an optional direct JSON-RPC TCP socket exposed on a second port.
 | Container port | Default host port | What it is |
 | --- | --- | --- |
 | `8080/tcp` | `8080` | REST API. Always running. |
-| `7583/tcp` | `7583` | Raw signal-cli JSON-RPC socket. Only listening when `mode` is `json-rpc*` and `expose_jsonrpc` is `true`. Change the host port in the addon's **Network** tab if 7583 is already used by something else on your HA host. |
+| `7583/tcp` | `7583` | signal-cli HTTP JSON-RPC (endpoint `POST /api/v1/rpc`). Only listening when `mode` is `json-rpc*` and `expose_jsonrpc` is `true`. Change the host port in the addon's **Network** tab if 7583 is already used on your HA host. |
 
 ## Persistence
 

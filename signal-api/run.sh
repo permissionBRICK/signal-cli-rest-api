@@ -23,7 +23,7 @@ if [ -f "$OPTIONS_FILE" ]; then
     # ports: declaration in config.yaml. The user changes the host-side port
     # via the addon's Network tab in Home Assistant.
     if [ "$EXPOSE_JSONRPC" = "true" ]; then
-        export JSON_RPC_TCP_PORT=7583
+        export JSON_RPC_HTTP_PORT=7583
     fi
 
     [ -n "$AUTO_RECEIVE_SCHEDULE" ] && export AUTO_RECEIVE_SCHEDULE

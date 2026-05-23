@@ -13,7 +13,7 @@ import (
 const supervisorctlConfigTemplate = `
 [program:%s]
 process_name=%s
-command=%s --output=json --config %s%s daemon %s%s%s%s --tcp 127.0.0.1:%d
+command=%s --output=json --config %s%s daemon %s%s%s%s --tcp 127.0.0.1:%d%s
 autostart=true
 autorestart=true
 startretries=10
@@ -94,6 +94,18 @@ func main() {
 		log.Fatal("Invalid JSON_RPC_TRUST_NEW_IDENTITIES environment variable set!")
 	}
 
+	// Optionally expose the signal-cli daemon's HTTP JSON-RPC listener
+	// directly to the outside world. This is the transport that signal-cli
+	// clients like Hermes expect (POST'ing JSON-RPC bodies to /). The local
+	// --tcp socket is kept unchanged so the REST API code path is untouched.
+	signalCliHttpListener := ""
+	httpPortEnv := utils.GetEnv("JSON_RPC_HTTP_PORT", "")
+	if httpPortEnv != "" {
+		httpBind := utils.GetEnv("JSON_RPC_HTTP_BIND", "0.0.0.0")
+		signalCliHttpListener = " --http " + httpBind + ":" + httpPortEnv
+		log.Info("Adding HTTP JSON-RPC listener on ", httpBind, ":", httpPortEnv)
+	}
+
 	log.Info("Updated jsonrpc2.yml")
 
 	//write supervisorctl config
@@ -101,7 +113,7 @@ func main() {
 
 	supervisorctlConfig := fmt.Sprintf(supervisorctlConfigTemplate, supervisorctlProgramName, supervisorctlProgramName, signalCliBinary,
 		signalCliConfigDir, trustNewIdentities, signalCliIgnoreAttachments, signalCliIgnoreStories,
-		signalCliIgnoreAvatars, signalCliIgnoreStickers, tcpPort,
+		signalCliIgnoreAvatars, signalCliIgnoreStickers, tcpPort, signalCliHttpListener,
 		supervisorctlProgramName, supervisorctlProgramName)
 
 	err = ioutil.WriteFile(supervisorctlConfigFilename, []byte(supervisorctlConfig), 0644)
