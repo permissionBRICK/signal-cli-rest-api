@@ -1,5 +1,5 @@
 name: Signal CLI REST API
-version: "0.1.1"
+version: "0.1.2"
 slug: signal_cli_rest_api
 description: >-
   Signal Messenger REST API wrapper around signal-cli, with an optional
@@ -22,6 +22,10 @@ ports:
 ports_description:
   "8080/tcp": REST API
   "7583/tcp": signal-cli JSON-RPC (only listens when expose_jsonrpc is on AND mode is json-rpc / json-rpc-native; change the host port here if 7583 conflicts on the host)
+map:
+  - addon_config:rw
+environment:
+  SIGNAL_CLI_CONFIG_DIR: /config
 options:
   mode: normal
   log_level: info

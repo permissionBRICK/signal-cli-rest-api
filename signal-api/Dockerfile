@@ -10,8 +10,9 @@ RUN apt-get update \
 COPY run.sh /run.sh
 RUN chmod +x /run.sh
 
-# Persist signal-cli config across addon restarts/updates under /data,
-# which Home Assistant auto-mounts read-write for every addon.
-ENV SIGNAL_CLI_CONFIG_DIR=/data/signal-cli
+# signal-cli's config dir is set via the addon's `environment:` block in
+# config.yaml (HA-native way). We declare /config as a VOLUME so docker
+# persists it as a named volume across addon restarts.
+VOLUME ["/config"]
 
 ENTRYPOINT ["/run.sh"]
