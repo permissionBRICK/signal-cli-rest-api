@@ -10,7 +10,8 @@ RUN apt-get update \
 COPY run.sh /run.sh
 RUN chmod +x /run.sh
 
-# Persist signal-cli config across addon restarts/updates via /addon_config.
-ENV SIGNAL_CLI_CONFIG_DIR=/addon_config/signal-cli
+# Persist signal-cli config across addon restarts/updates under /data,
+# which Home Assistant auto-mounts read-write for every addon.
+ENV SIGNAL_CLI_CONFIG_DIR=/data/signal-cli
 
 ENTRYPOINT ["/run.sh"]
