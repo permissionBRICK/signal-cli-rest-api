@@ -2,6 +2,8 @@
 
 This project creates a small dockerized REST API around [signal-cli](https://github.com/AsamK/signal-cli).
 
+The Goal of this Fork is to have a custom Home Assistant Addon that hosts the Signal CLI in a way it exposes the actual underlying signal-cli HTTP Port via JSON_RPC_HTTP_PORT instead of the just wrapper, in order to be used with other tools like Openclaw / Hermes agent.
+
 At the moment, the following functionality is exposed via REST:
 
 - Register a number
@@ -14,6 +16,15 @@ At the moment, the following functionality is exposed via REST:
 - Update profile
 
 and [many more](https://bbernhard.github.io/signal-cli-rest-api/)
+
+## Quick Start: Install into Home Assistant OS for direct passthrough mode
+
+- Add this Repo-URL as a custom Add-On Repository
+- Install it from the Repo List (Signal-Cli-Rest-Api)
+- Configure it with MODE json-rpc or json-rpc-native
+- Configure the JSON_RPC_HTTP_PORT
+- run the quick registration by linking an existing signal app via QR code: http://localhost:8080/v1/qrcodelink?device_name=signal-api (replace the port with whatever you used for PORT if you had to change it)
+- pass the JSON_RPC_HTTP_PORT to your connecting application (Hermes, etc)
 
 
 ## Getting started
