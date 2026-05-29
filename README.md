@@ -1,4 +1,4 @@
-# Dockerized Signal Messenger REST API
+# Dockerized Signal-cli Home Assistant Add-On
 
 This project creates a small dockerized REST API around [signal-cli](https://github.com/AsamK/signal-cli).
 
